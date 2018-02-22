@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <meta charset="utf-8">
+    
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <title>Math Test</title>
+
+    <script type="text/javascript" type="text/javascript"> 
+    
+    var ros = new ROSLIB.Ros({
+    url : 'ws://localhost:9090'});
+    
+    var pub = new ROSLIB.Topic({
+      ros : ros,
+      name : '/connect',
+      messageType : 'std_msgs/Bool'
+    });
+    
+    var b = new ROSLIB.Message({
+      data : true });
+      
+    pub.publish(b);
+
+    ros.on('connection', function() {
+      console.log('Connected to websocket server.');
+      });
+    
+    ros.on('error', function(error) {
+      console.log('Error connecting to websocket server: ', error);});  
+      
+    ros.on('close', function() {
+      console.log('Connection to websocket server closed.');});
+      
+    </script>
+
+  </head>
+
+
+  <body>
+
+
+  <label for="level">Select the difficulty level: </label>
+
+  <select id="level">
+  <option value="">--Make a choice--</option>
+  <option value="level1">Level 1</option>
+  <option value="level2">Level 2</option>
+  <option value="level3">Level 3</option>
+  </select>
+
+  <h1></h1>
+
+  <p1></p1>
+  
+  <h2></h2>
+
+  <label for="number">Enter answer: </label>
+
+  <input id="number" type="number">
+
+  <button>Submit</button>
+  
+  <h3></h3>
+
+  <p2></p2>
+
+    
+
+
+
+    <script>
+    var select = document.querySelector('select');
+    var para = document.querySelector('p1');
+    var result = document.querySelector('p2');
+    var input = document.querySelector('input');
+    var btn = document.querySelector('button');
+    
+    var answer = 0;
+    select.onchange = function() {
+      answer = generateProblem();
+    }
+    function generateRandomInteger(min, max) {
+      return Math.floor(min + Math.random()*(max+1 - min))
+    }
+    
+    function generateProblem() {
+      var choice = select.value;
+      para.textContent = '';
+      switch (choice) {
+        case 'level1':
+          var ans = generateRandomInteger(0, 20);
+          para.textContent = ans;
+          var operator = generateRandomInteger(0, 1);
+          if (operator === 0) {
+            var number = generateRandomInteger(0, 20);
+            para.textContent += (' + ' + number);
+            ans += number;
+          } else {
+            var number = generateRandomInteger(0, 20) + ans;
+            para.textContent = number + ' - ' + para.textContent;
+            ans = number - ans;
+          }
+          break;
+        case 'level2':
+          var ans = generateRandomInteger(0, 33);
+          para.textContent = ans;
+          for (var i = 0; i < 2; i ++) {
+            var operator = generateRandomInteger(0, 1);
+            if (operator === 0){
+              var number = generateRandomInteger(0, 33);
+              para.textContent += (' + ' + number);
+              ans += number;
+            } else {
+              if (i === 0) {
+                var number = generateRandomInteger(0, 33) + ans;
+ 	        para.textContent = number + ' - ' + para.textContent;
+                ans = number- ans;
+              } else {
+                var number = generateRandomInteger(0, ans);
+                para.textContent += (' - ' + number);
+                ans -= number;
+              }
+            }
+          }          
+          break;
+        case 'level3':
+          var order = generateRandomInteger(0, 1);
+          if (order === 0) {
+            var n = generateRandomInteger(2, 9);
+            var m = generateRandomInteger(2, 9);
+            para.textContent = n + ' x ' + m;
+            ans = n * m;
+            var operator = generateRandomInteger(0, 1);
+            if (operator === 0){
+              var number = generateRandomInteger(0, 99 - ans);
+              para.textContent += (' + ' + number);
+              ans += number;
+            } else {
+                var number = generateRandomInteger(0, ans);
+                para.textContent += (' - ' + number);
+                ans -= number;              
+            }      
+          } else {
+            var n = generateRandomInteger(2, 8);
+            var m = generateRandomInteger(2, 8);
+            para.textContent = n + ' x ' + m;
+            ans = n * m;
+            var operator = generateRandomInteger(0, 1);
+            if (operator === 0){
+              var number = generateRandomInteger(0, 99 - ans);
+              para.textContent = number + ' + ' + para.textContent;
+              ans += number;
+            } else {
+                var number = generateRandomInteger(ans, 99);
+                para.textContent = number + ' - ' + para.textContent;
+                ans = number - ans;              
+            }               
+          }
+          break;
+        default:
+          para.textContent = '';
+      }
+      return ans;
+    }
+    btn.addEventListener('click', function() {
+      result.textContent = '';
+      var num = input.value;
+      input.value = '';
+      input.focus();
+      
+      if (num - answer === 0) {
+        result.textContent = 'Correct'; 
+        answer = generateProblem();
+      } else {
+        result.textContent = 'Incorrect';
+      }
+    });  
+    </script>
+
+    
+
+  </body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <meta charset="utf-8">
+    
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <title>Demo</title>
+
+    <script type="text/javascript" type="text/javascript"> 
+    
+    var ros = new ROSLIB.Ros({
+    url : 'ws://localhost:9090'});
+    
+    var pub = new ROSLIB.Topic({
+      ros : ros,
+      name : '/gesture',
+      messageType : 'std_msgs/String'
+    });
+    
+    var s = new ROSLIB.Message({
+      data : "NoMove" });
+
+
+    ros.on('connection', function() {
+      console.log('Connected to websocket server.');
+      });
+    
+    ros.on('error', function(error) {
+      console.log('Error connecting to websocket server: ', error);});  
+      
+    ros.on('close', function() {
+      console.log('Connection to websocket server closed.');});
+      
+    </script>
+
+  </head>
+
+
+  <body>
+
+
+  <label for="movement">Select movement: </label>
+
+  <select id="movement">
+  <option value="">--Make a choice--</option>
+  <option value="eyelid">Eyelid</option>
+  <option value="eye_h">Eye Left Right</option>
+  <option value="eye_v">Eye Up Down</option>
+  <option value="nod">Nod</option>
+  <option value="shake">Shake</option> 
+  </select>
+
+  <h1></h1>
+
+  <p1></p1>
+  
+  <h2></h2>
+
+  <button>MOVE</button>
+
+    
+
+
+
+    <script>
+    var select = document.querySelector('select');
+    var para = document.querySelector('p1');
+    var btn = document.querySelector('button');
+    
+    select.onchange = function() {
+      generateMove();
+    }
+
+    
+    function generateMove() {
+      var choice = select.value;
+      para.textContent = '';
+      switch (choice) {
+        case 'eyelid':
+          s = new ROSLIB.Message({
+      data : "eyelid" });
+          break;
+        case 'eye_h':
+          s = new ROSLIB.Message({
+      data : "eye_h" });
+          break;
+        case 'eye_v':
+          s = new ROSLIB.Message({
+      data : "eye_v" });
+          break;
+        case 'nod':
+          s = new ROSLIB.Message({
+      data : "nod" });
+          break;
+        case 'shake':
+          s = new ROSLIB.Message({
+      data : "shake" });
+          break;
+        default:
+          s = new ROSLIB.Message({
+      data : "NoMove" });
+          break;
+      }
+    }
+
+    btn.addEventListener('click', function() {
+      pub.publish(s)
+    }); 
+    
+    
+    </script>
+
+    
+
+  </body>
+
+</html>
